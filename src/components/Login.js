@@ -1,26 +1,47 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { auth } from "../firebase";
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+} from "firebase/auth";
 import "../css/Login.css";
+
 function Login() {
+    const history = useHistory();
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const signIn = (e) => {
         e.preventDefault();
 
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                console.log(userCredential.user);
+                if (userCredential) {
+                    history.push("/");
+                }
+            })
+            .catch((error) => {
+                alert(error.code + error.message);
+            });
         //firebase stuff
     };
 
     const register = (e) => {
         e.preventDefault();
 
-        // auth.createUserWithEmailAndPassword(email, password)
-        //     .then((auth) => {
-        //         console.log(auth);
-        //     })
-        //     .catch((error) => alert(error.message));
-        // //some fancy firebase stuff
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                console.log(userCredential);
+
+                if (userCredential) {
+                    history.push("/");
+                }
+            })
+            .catch((error) => alert(error.message));
+        //some fancy firebase stuff
     };
     return (
         <div className="login">
@@ -66,7 +87,7 @@ function Login() {
                 </p>
 
                 <button onClick={register} className="login__registerButton">
-                    Create your Amazon Button
+                    Create your Amazon Account
                 </button>
             </div>
         </div>
